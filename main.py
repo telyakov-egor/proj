@@ -1,45 +1,34 @@
 from flask import Flask, request
-from flask_restful import Api, Resource, reqparse, fields, marshal_with
+from flask_restx import Api, Resource, fields
 
 app = Flask(__name__)
-api = Api(app)
+api = Api(app, doc='/docs')  # Добавьте doc='/docs' для указания пути к документации
 
-product_fields = {
+product_model = api.model('Product', {
     'id': fields.Integer,
     'name': fields.String,
     'category': fields.String,
     'price': fields.Float,
     'quantity': fields.Integer
-}
+})
 
 products = []
 
+@api.route('/products')
 class ProductList(Resource):
-    @marshal_with(product_fields)
+    @api.marshal_with(product_model, as_list=True)
     def get(self):
         return products
 
+    @api.expect(product_model)
     def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('id', type=int, required=True, help='ID cannot be blank')
-        parser.add_argument('name', type=str, required=True, help='Name cannot be blank')
-        parser.add_argument('category', type=str, required=True, help='Category cannot be blank')
-        parser.add_argument('price', type=float, required=True, help='Price cannot be blank')
-        parser.add_argument('quantity', type=int, required=True, help='Quantity cannot be blank')
-        args = parser.parse_args()
-
-        new_product = {
-            'id': args['id'],
-            'name': args['name'],
-            'category': args['category'],
-            'price': args['price'],
-            'quantity': args['quantity']
-        }
+        new_product = api.payload
         products.append(new_product)
         return new_product, 201
 
+@api.route('/products/<int:id>')
 class Product(Resource):
-    @marshal_with(product_fields)
+    @api.marshal_with(product_model)
     def get(self, id):
         product = next((prod for prod in products if prod['id'] == id), None)
         if product is None:
@@ -51,28 +40,17 @@ class Product(Resource):
         products = [prod for prod in products if prod['id'] != id]
         return '', 204
 
+    @api.expect(product_model)
     def put(self, id):
-        parser = reqparse.RequestParser()
-        parser.add_argument('name', type=str)
-        parser.add_argument('category', type=str)
-        parser.add_argument('price', type=float)
-        parser.add_argument('quantity', type=int)
-        args = parser.parse_args()
-
         product = next((prod for prod in products if prod['id'] == id), None)
         if product is None:
             return {'message': 'Product not found'}, 404
 
-        if args['name']:
-            product['name'] = args['name']
-        if args['category']:
-            product['category'] = args['category']
-        if args['price']:
-            product['price'] = args['price']
-        if args['quantity']:
-            product['quantity'] = args['quantity']
+        data = api.payload
+        product.update(data)
         return product
 
+@api.route('/products/stats')
 class ProductStats(Resource):
     def get(self):
         if not products:
@@ -94,10 +72,6 @@ class ProductStats(Resource):
             }
         }
         return stats
-
-api.add_resource(ProductList, '/products')
-api.add_resource(Product, '/products/<int:id>')
-api.add_resource(ProductStats, '/products/stats')
 
 if __name__ == '__main__':
     app.run(debug=True)
