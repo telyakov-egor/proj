@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
 from flask_restful import Api, Resource, reqparse, fields, marshal_with
 
 app = Flask(__name__)
