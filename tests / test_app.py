@@ -10,7 +10,6 @@ class BasicTests(unittest.TestCase):
     def test_get_all_products(self):
         response = self.app.get('/products')
         self.assertEqual(response.status_code, 200)
-
     def test_add_product(self):
         response = self.app.post('/products', json={
             'id': 2,
