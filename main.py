@@ -58,7 +58,6 @@ class ProductStats(Resource):
 
         prices = [prod['price'] for prod in products]
         quantities = [prod['quantity'] for prod in products]
-
         stats = {
             "price": {
                 "average": sum(prices) / len(prices),
