@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask_restx import Api, Resource, fields
 
 app = Flask(__name__)
-api = Api(app, doc='/docs')  # Добавьте doc='/docs' для указания пути к документации
+api = Api(app, doc='/docs')
 
 product_model = api.model('Product', {
     'id': fields.Integer,
