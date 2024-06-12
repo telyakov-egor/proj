@@ -1,7 +1,5 @@
 import unittest
 from main import app
-import sys
-sys.path.append("/home/e/PycharmProjects/proj/main.py")
 
 
 class BasicTests(unittest.TestCase):
