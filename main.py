@@ -13,7 +13,6 @@ product_model = api.model('Product', {
 })
 
 products = []
-
 @api.route('/products')
 class ProductList(Resource):
     @api.marshal_with(product_model, as_list=True)
