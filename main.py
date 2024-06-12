@@ -39,7 +39,6 @@ class Product(Resource):
         global products
         products = [prod for prod in products if prod['id'] != id]
         return '', 204
-
     @api.expect(product_model)
     def put(self, id):
         product = next((prod for prod in products if prod['id'] == id), None)
