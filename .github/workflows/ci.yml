@@ -9,13 +9,19 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.ref }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.8'
+        node-version: '16.x'
 
     - name: Install dependencies
       run: |
